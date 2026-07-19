@@ -32,7 +32,7 @@ const EventSchema = mongoose.Schema({
     },
     createdAt:{
         type: Date,
-        default: DOMExceptionate.now
+        default: Date.now
     }
 
 })
