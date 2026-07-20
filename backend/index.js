@@ -41,8 +41,17 @@ app.post(`/api/register`,async (req,res)=>{
     const {name,username,email,password,phoneNumber,DOB} = req.body;
 
     try {
-        const hashedPassword = await bcrypt.hash(password,10);
+        const isUserFound = await User.findOne({username});
+        const isEmailFound = await User.findOne({email});
 
+        if(isUserFound){
+            return res.status(400).json({message: 'Username is not available'})
+        }
+
+        if(isEmailFound){
+            return res.status(400).json({message: 'Email is not available'})
+        }
+        const hashedPassword = await bcrypt.hash(password,10);
         const newUser = new User({name,username,email,password:hashedPassword,phoneNumber,DOB})
         await newUser.save();
         return res.status(201).json({message:'Register Success'});
