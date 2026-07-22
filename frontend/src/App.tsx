@@ -6,6 +6,7 @@ import Admin from './pages/Admin';
 import AdminRoutes from './components/AdminRoutes';
 import { Toaster } from 'react-hot-toast';
 import AddEvent from './pages/AddEvent';
+import EditEvent from './pages/EditEvent';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
     <Route path = "/register" element = {<Register/>}> </Route>
     <Route path = "/admin" element = {<AdminRoutes><Admin/></AdminRoutes>}></Route>
     <Route path="/admin/add-event" element={<AdminRoutes><AddEvent /></AdminRoutes>} />
+    <Route path="/admin/edit-event/:id" element={<AdminRoutes><EditEvent /></AdminRoutes>} />
   </Routes>
   </>
   )
