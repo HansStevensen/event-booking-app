@@ -7,7 +7,8 @@ import AdminRoutes from './components/AdminRoutes';
 import { Toaster } from 'react-hot-toast';
 import AddEvent from './pages/AddEvent';
 import EditEvent from './pages/EditEvent';
-
+import EventDetail from './pages/EventDetail';
+import MyBookings from './pages/MyBookings';
 
 function App() {
   return(
@@ -20,6 +21,8 @@ function App() {
     <Route path = "/admin" element = {<AdminRoutes><Admin/></AdminRoutes>}></Route>
     <Route path="/admin/add-event" element={<AdminRoutes><AddEvent /></AdminRoutes>} />
     <Route path="/admin/edit-event/:id" element={<AdminRoutes><EditEvent /></AdminRoutes>} />
+    <Route path="/event/:id" element={<EventDetail />} />
+    <Route path="/my-bookings" element={<MyBookings />} />
   </Routes>
   </>
   )
