@@ -77,6 +77,13 @@ export default function MyBookings() {
                             Catalog
                         </button>
 
+                        <button
+                            onClick={() => navigate('/profile')}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
+                        >
+                            My Profile
+                        </button>
+
                         {role === 'admin' && (
                             <button
                                 onClick={() => navigate('/admin')}

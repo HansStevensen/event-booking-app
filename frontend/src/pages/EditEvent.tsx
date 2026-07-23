@@ -29,7 +29,12 @@ export default function EditEvent() {
                     newPrice: eventData.price || 0,
                     newQuota: eventData.quota || 0,
                     newDate: eventData.date ? eventData.date.split('T')[0] : "",
-                    newImage: null
+                    newImage: null,
+                    newVenueAddress: eventData.venueAddress || "",
+                    newMapsUrl: eventData.mapsUrl || "",
+                    newOpenGateTime: eventData.openGateTime || "",
+                    newStartTime: eventData.startTime || "",
+                    newTerms: eventData.terms || ""
                 });
             }
         } catch (err) {
@@ -55,6 +60,11 @@ export default function EditEvent() {
         data.append("newPrice", formEvent.newPrice);
         data.append("newQuota", formEvent.newQuota);
         data.append("newDate", formEvent.newDate);
+        data.append("newVenueAddress", formEvent.newVenueAddress);
+        data.append("newMapsUrl", formEvent.newMapsUrl);
+        data.append("newOpenGateTime", formEvent.newOpenGateTime);
+        data.append("newStartTime", formEvent.newStartTime);
+        data.append("newTerms", formEvent.newTerms);
         if (formEvent.newImage) {
             data.append("newImage", formEvent.newImage);
         }
@@ -172,6 +182,69 @@ export default function EditEvent() {
                                 accept="image/*"
                                 onChange={handleonChange}
                                 className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-semibold text-gray-700">Venue Address</label>
+                            <input 
+                                type="text"
+                                name="newVenueAddress"
+                                placeholder="e.g. Jl. Asia Afrika No. 123"
+                                value={formEvent.newVenueAddress}
+                                onChange={handleonChange}
+                                required
+                                className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-semibold text-gray-700">Maps URL</label>
+                            <input 
+                                type="text"
+                                name="newMapsUrl"
+                                placeholder="e.g. https://maps.app.goo.gl/xyz"
+                                value={formEvent.newMapsUrl}
+                                onChange={handleonChange}
+                                required
+                                className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-semibold text-gray-700">Open Gate Time</label>
+                            <input 
+                                type="time"
+                                name="newOpenGateTime"
+                                value={formEvent.newOpenGateTime}
+                                onChange={handleonChange}
+                                required
+                                className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-semibold text-gray-700">Start Time</label>
+                            <input 
+                                type="time"
+                                name="newStartTime"
+                                value={formEvent.newStartTime}
+                                onChange={handleonChange}
+                                required
+                                className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5 md:col-span-2">
+                            <label className="text-sm font-semibold text-gray-700">Terms & Conditions</label>
+                            <textarea 
+                                name="newTerms"
+                                placeholder="List the terms and conditions..."
+                                value={formEvent.newTerms}
+                                onChange={handleonChange}
+                                required
+                                rows={4}
+                                className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"
                             />
                         </div>
                     </div>

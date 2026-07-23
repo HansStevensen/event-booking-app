@@ -30,19 +30,8 @@ export default function Home() {
         if (!userId) {
             toast.error("Please login to book tickets");
             navigate('/login');
-            return;
-        }
-
-        try {
-            await axios.post(`http://localhost:5000/api/bookings`, {
-                userId,
-                eventId,
-                quantity: 1
-            });
-            toast.success("Booking created! Complete your payment.");
-            navigate('/my-bookings');
-        } catch (err: any) {
-            toast.error(err.response?.data?.message || "Failed to book ticket");
+        }else{
+            navigate(`/event/${eventId}`);
         }
     };
 
@@ -95,6 +84,15 @@ export default function Home() {
                                 className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
                             >
                                 My Tickets
+                            </button>
+                        )}
+
+                        {userId && (
+                            <button
+                                onClick={() => navigate('/profile')}
+                                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
+                            >
+                                My Profile
                             </button>
                         )}
 

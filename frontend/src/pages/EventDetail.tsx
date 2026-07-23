@@ -113,6 +113,15 @@ export default function EventDetail() {
                             </button>
                         )}
 
+                        {userId && (
+                            <button
+                                onClick={() => navigate('/profile')}
+                                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
+                            >
+                                My Profile
+                            </button>
+                        )}
+
                         {role === 'admin' && (
                             <button
                                 onClick={() => navigate('/admin')}
@@ -189,6 +198,42 @@ export default function EventDetail() {
                                 {event.title}
                             </h2>
 
+                            {/* Schedule & Venue Details */}
+                            <div className="flex flex-col gap-3 bg-gray-50 p-4 rounded-xl border border-gray-200 mb-6">
+                                {(event.openGateTime || event.startTime) && (
+                                    <div className="flex items-center gap-4 text-xs font-semibold text-gray-700">
+                                        {event.openGateTime && (
+                                            <span className="px-2.5 py-1 bg-white border border-gray-200 rounded-md">
+                                                Open Gate: {event.openGateTime}
+                                            </span>
+                                        )}
+                                        {event.startTime && (
+                                            <span className="px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-md">
+                                                Start Show: {event.startTime}
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
+
+                                {event.venueAddress && (
+                                    <div>
+                                        <p className="text-xs font-semibold text-gray-500 uppercase">Venue Address</p>
+                                        <p className="text-sm font-medium text-gray-800 mt-0.5">{event.venueAddress}</p>
+                                    </div>
+                                )}
+
+                                {event.mapsUrl && (
+                                    <a
+                                        href={event.mapsUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:underline mt-1"
+                                    >
+                                        📍 Open in Google Maps →
+                                    </a>
+                                )}
+                            </div>
+
                             <div className="mb-6">
                                 <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-2">
                                     Description
@@ -197,6 +242,17 @@ export default function EventDetail() {
                                     {event.description}
                                 </p>
                             </div>
+
+                            {event.terms && (
+                                <div className="mb-6 border-t border-gray-100 pt-4">
+                                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                                        Terms & Conditions
+                                    </h3>
+                                    <p className="text-xs text-gray-500 leading-relaxed whitespace-pre-line">
+                                        {event.terms}
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Booking Section */}

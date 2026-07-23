@@ -102,7 +102,7 @@ app.get(`/api/profile/:id`,async(req,res)=>{
 
 app.put(`/api/profile/:id`,async(req,res)=>{
     const id = req.params.id;
-    const {newName,newUsername,newEmail,newPassword,newPhoneNumber,newDOB} = req.body;
+    const {newName,newUsername,newEmail,oldPassword,newPassword,newPhoneNumber,newDOB} = req.body;
 
     try {
         const user = await User.findById(id)
@@ -121,15 +121,20 @@ app.put(`/api/profile/:id`,async(req,res)=>{
                 return res.status(400).json({message: 'Email is not available'})
             }
 
-            let hashedPassword;
             if(newPassword){
-                hashedPassword = await bcrypt.hash(newPassword,10);
+                if(!oldPassword){
+                    return res.status(400).json({message: 'Current password is required to change password'})
+                }
+                const isMatch = await bcrypt.compare(oldPassword, user.password);
+                if(!isMatch){
+                    return res.status(400).json({message: 'Current password is incorrect'})
+                }
+                user.password = await bcrypt.hash(newPassword, 10);
             }
 
             user.name = newName || user.name;
             user.username = newUsername || user.username;
             user.email = newEmail || user.email;
-            user.password = hashedPassword || user.password;
             user.phoneNumber = newPhoneNumber || user.phoneNumber;
             user.DOB = newDOB || user.DOB;
 
@@ -142,11 +147,11 @@ app.put(`/api/profile/:id`,async(req,res)=>{
 })
 
 app.post(`/api/events`,upload.single('image'),async(req,res)=>{
-    const {title,description,location,price,quota,date} = req.body;
+    const {title,description,location,price,quota,date,venueAddress,mapsUrl,openGateTime,startTime,terms} = req.body;
 
     try {
         const image = req.file.path;
-        const events = new Event({title,description,location,price,quota,date,image});
+        const events = new Event({title,description,location,price,quota,date,image,venueAddress,mapsUrl,openGateTime,startTime,terms});
 
         await events.save();
 
@@ -183,7 +188,7 @@ app.get(`/api/events/:id`,async(req,res)=>{
 
 app.put(`/api/events/:id`,upload.single('newImage'),async(req,res) =>{
     const eventId = req.params.id;
-    const {newTitle,newDescription,newLocation,newPrice,newQuota,newDate} = req.body;
+    const {newTitle,newDescription,newLocation,newPrice,newQuota,newDate,newVenueAddress,newMapsUrl,newOpenGateTime,newStartTime,newTerms} = req.body;
 
     try {
         const events = await Event.findById(eventId);
@@ -202,6 +207,11 @@ app.put(`/api/events/:id`,upload.single('newImage'),async(req,res) =>{
             events.price = newPrice || events.price;
             events.quota = newQuota || events.quota;
             events.date = newDate || events.date;
+            events.venueAddress = newVenueAddress || events.venueAddress;
+            events.mapsUrl = newMapsUrl || events.mapsUrl;
+            events.openGateTime = newOpenGateTime || events.openGateTime;
+            events.startTime = newStartTime || events.startTime;
+            events.terms = newTerms || events.terms;
 
             await events.save();
             return res.status(200).json({message:"Event updated successfully"})
@@ -219,8 +229,14 @@ app.delete(`/api/events/:id`,async(req,res)=>{
         if(!events){
             return res.status(404).json({message:"Event is not found"})
         }else{
-            await Event.deleteOne({_id:events._id})
-            return res.status(200).json({message:"Event deleted"})
+            const existBooking = await Booking.findOne({eventId});
+            if(!existBooking){
+                await Event.deleteOne({_id:events._id})
+                return res.status(200).json({message:"Event deleted"})
+            }else{
+                return res.status(404).json({message:"Cannot delete event that has existing customer Bookings"})
+            }
+            
         }
     } catch (err) {
         return res.status(500).json({message:"Failed to delete event"})

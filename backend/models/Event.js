@@ -33,6 +33,26 @@ const EventSchema = mongoose.Schema({
     createdAt:{
         type: Date,
         default: Date.now
+    },
+    venueAddress:{
+        type: String,
+        required: true,
+    },
+    mapsUrl:{
+        type: String,
+        required: true,
+    },
+    openGateTime:{
+        type: String,
+        required: true,
+    },
+    startTime:{
+        type: String,
+        required: true,
+    },
+    terms:{
+        type: String,
+        required: true,
     }
 
 })

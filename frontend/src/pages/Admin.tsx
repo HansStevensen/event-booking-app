@@ -1,40 +1,42 @@
 import axios from "axios";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export default function Admin() {
     const navigate = useNavigate();
     const [events, setEvents] = useState<any[]>([]);
-    const [activeTab,setActiveTab] = useState<'events'|'bookings'>('events');
-    const [bookings,setBookings] = useState<any[]>([]);
+    const [activeTab, setActiveTab] = useState<'events' | 'bookings'>('events');
+    const [bookings, setBookings] = useState<any[]>([]);
+    const [bookingSearchQuery, setBookingSearchQuery] = useState('');
 
-    const getBookings = async()=>{
+    const getBookings = async () => {
         try {
             const res = await axios.get(`http://localhost:5000/api/bookings`);
-            setBookings(res.data.allBookings);
+            setBookings(res.data.allBookings || []);
         } catch (err) {
             toast.error('Failed to load bookings');
         }
-    }
+    };
 
-    const getEvent = async()=>{
+    const getEvent = async () => {
         try {
             const response = await axios.get(`http://localhost:5000/api/events`);
-            setEvents(response.data.allEvents);
+            setEvents(response.data.allEvents || []);
         } catch (err) {
-            toast.error('Gagal Mengambil Data')
+            toast.error('Gagal Mengambil Data Event');
         }
-    }
-    const deleteEvent = async(id: string)=>{
+    };
+
+    const deleteEvent = async (id: string) => {
         try {
             const response = await axios.delete(`http://localhost:5000/api/events/${id}`);
             await getEvent();
-            toast.success(response.data.message)
-        } catch (error) {
-            toast.error('Gagal Menghapus Data')
+            toast.success(response.data.message);
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || 'Failed to delete event');
         }
-    }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('userId');
@@ -43,10 +45,30 @@ export default function Admin() {
         navigate('/login', { replace: true });
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         getEvent();
         getBookings();
-    },[]);
+
+        const timer = setInterval(() => {
+            getEvent();
+            getBookings();
+        }, 10000);
+
+        return () => clearInterval(timer);
+    }, []);
+
+    const filteredBookings = bookings.filter((booking) => {
+        const userName = booking.userId?.name || booking.userId?.username || '';
+        const userEmail = booking.userId?.email || '';
+        const eventTitle = booking.eventId?.title || '';
+        const query = bookingSearchQuery.toLowerCase();
+
+        return (
+            userName.toLowerCase().includes(query) ||
+            userEmail.toLowerCase().includes(query) ||
+            eventTitle.toLowerCase().includes(query)
+        );
+    });
 
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-6 flex flex-col items-center">
@@ -65,6 +87,7 @@ export default function Admin() {
                             + Add Event
                         </button>
                     )}
+
                     <button
                         onClick={handleLogout}
                         className="px-4 py-2 border border-red-200 text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition text-sm font-medium"
@@ -152,56 +175,69 @@ export default function Admin() {
                     )
                 ) : (
                     /* TAB 2: TRANSACTION MONITORING */
-                    bookings.length === 0 ? (
-                        <p className="text-gray-500 text-center py-12 bg-white rounded-2xl border border-gray-100">
-                            No booking transactions found.
-                        </p>
-                    ) : (
-                        bookings.map((booking) => (
-                            <div key={booking._id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                                <div className="flex flex-col gap-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-gray-900 text-base">
-                                            {booking.userId?.name || booking.userId?.username || "Deleted User"}
-                                        </span>
-                                        <span className="text-xs text-gray-400">({booking.userId?.email || "-"})</span>
-                                    </div>
-                                    <p className="text-sm font-medium text-blue-600">
-                                        Event: {booking.eventId?.title || "Deleted Event"}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        Booked on: {new Date(booking.createdAt).toLocaleDateString('id-ID', {
-                                            day: 'numeric',
-                                            month: 'short',
-                                            year: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        })}
-                                    </p>
-                                </div>
+                    <div className="flex flex-col gap-4">
+                        {/* Transaction Search Input */}
+                        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3">
+                            <input
+                                type="text"
+                                placeholder="Search transaction by customer name, email, or event title..."
+                                value={bookingSearchQuery}
+                                onChange={(e) => setBookingSearchQuery(e.target.value)}
+                                className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            />
+                        </div>
 
-                                <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0">
-                                    <div className="text-left md:text-right">
-                                        <p className="text-xs text-gray-400">Quantity: {booking.quantity} Tickets</p>
-                                        <p className="text-base font-bold text-gray-800">
-                                            Rp {booking.totalPrice?.toLocaleString('id-ID')}
+                        {filteredBookings.length === 0 ? (
+                            <p className="text-gray-500 text-center py-12 bg-white rounded-2xl border border-gray-100">
+                                {bookingSearchQuery ? `No transactions match "${bookingSearchQuery}"` : "No booking transactions found."}
+                            </p>
+                        ) : (
+                            filteredBookings.map((booking) => (
+                                <div key={booking._id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-semibold text-gray-900 text-base">
+                                                {booking.userId?.name || booking.userId?.username || "Deleted User"}
+                                            </span>
+                                            <span className="text-xs text-gray-400">({booking.userId?.email || "-"})</span>
+                                        </div>
+                                        <p className="text-sm font-medium text-blue-600">
+                                            Event: {booking.eventId?.title || "Deleted Event"}
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                            Booked on: {new Date(booking.createdAt).toLocaleDateString('id-ID', {
+                                                day: 'numeric',
+                                                month: 'short',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
                                         </p>
                                     </div>
 
-                                    {/* Status Badge */}
-                                    <span className={`px-3 py-1 text-xs font-semibold rounded-full capitalize ${
-                                        booking.status === 'paid'
-                                            ? 'bg-green-100 text-green-700 border border-green-200'
-                                            : booking.status === 'cancelled'
-                                            ? 'bg-red-100 text-red-700 border border-red-200'
-                                            : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
-                                    }`}>
-                                        {booking.status}
-                                    </span>
+                                    <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0">
+                                        <div className="text-left md:text-right">
+                                            <p className="text-xs text-gray-400">Quantity: {booking.quantity} Tickets</p>
+                                            <p className="text-base font-bold text-gray-800">
+                                                Rp {booking.totalPrice?.toLocaleString('id-ID')}
+                                            </p>
+                                        </div>
+
+                                        {/* Status Badge */}
+                                        <span className={`px-3 py-1 text-xs font-semibold rounded-full capitalize ${
+                                            booking.status === 'paid'
+                                                ? 'bg-green-100 text-green-700 border border-green-200'
+                                                : booking.status === 'cancelled'
+                                                ? 'bg-red-100 text-red-700 border border-red-200'
+                                                : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+                                        }`}>
+                                            {booking.status}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        ))
-                    )
+                            ))
+                        )}
+                    </div>
                 )}
             </div>
         </div>

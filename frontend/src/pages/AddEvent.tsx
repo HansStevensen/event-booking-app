@@ -13,6 +13,11 @@ export default function AddEvent(){
         quota:0,
         date:"",
         image:null,
+        venueAddress:"",
+        mapsUrl:"",
+        openGateTime:"",
+        startTime:"",
+        terms:""
     })
 
     const handleOnSubmit = async(e:React.FormEvent)=>{
@@ -26,6 +31,11 @@ export default function AddEvent(){
         data.append("quota",formEvent.quota);
         data.append("date",formEvent.date);
         data.append("image",formEvent.image);
+        data.append("venueAddress",formEvent.venueAddress);
+        data.append("mapsUrl",formEvent.mapsUrl);
+        data.append("openGateTime",formEvent.openGateTime);
+        data.append("startTime",formEvent.startTime);
+        data.append("terms",formEvent.terms);
 
         try {
             await axios.post(`http://localhost:5000/api/events`,data)
@@ -145,6 +155,69 @@ export default function AddEvent(){
                                 onChange={handleonChange}
                                 required
                                 className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-semibold text-gray-700">Venue Address</label>
+                            <input 
+                                type="text"
+                                name="venueAddress"
+                                placeholder="e.g. Jl. Asia Afrika No. 123"
+                                value={formEvent.venueAddress}
+                                onChange={handleonChange}
+                                required
+                                className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-semibold text-gray-700">Maps URL</label>
+                            <input 
+                                type="text"
+                                name="mapsUrl"
+                                placeholder="e.g. https://maps.app.goo.gl/xyz"
+                                value={formEvent.mapsUrl}
+                                onChange={handleonChange}
+                                required
+                                className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-semibold text-gray-700">Open Gate Time</label>
+                            <input 
+                                type="time"
+                                name="openGateTime"
+                                value={formEvent.openGateTime}
+                                onChange={handleonChange}
+                                required
+                                className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-semibold text-gray-700">Start Time</label>
+                            <input 
+                                type="time"
+                                name="startTime"
+                                value={formEvent.startTime}
+                                onChange={handleonChange}
+                                required
+                                className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5 md:col-span-2">
+                            <label className="text-sm font-semibold text-gray-700">Terms & Conditions</label>
+                            <textarea 
+                                name="terms"
+                                placeholder="List the terms and conditions..."
+                                value={formEvent.terms}
+                                onChange={handleonChange}
+                                required
+                                rows={4}
+                                className="border border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"
                             />
                         </div>
                     </div>
