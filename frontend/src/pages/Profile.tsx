@@ -132,7 +132,7 @@ export default function Profile() {
                                 onClick={() => setIsEditing(true)}
                                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl transition shadow-sm"
                             >
-                                ✏️ Edit Profile
+                                Edit Profile
                             </button>
                         )}
                     </div>
@@ -254,7 +254,7 @@ export default function Profile() {
                                             onClick={() => setShowPasswordInput(true)}
                                             className="text-left text-xs font-semibold text-blue-600 hover:text-blue-700 underline py-1"
                                         >
-                                            🔒 Change Password
+                                            Change Password
                                         </button>
                                     ) : (
                                         <div className="flex flex-col gap-4 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
